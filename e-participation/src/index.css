@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-navy: #061A40;
+  --color-brand-blue: #006DAA;
+  --color-brand-lightblue: #B9D6F2;
+  --color-brand-verylightblue: #E4ECF1;
+  --color-brand-purple: #AE69FD;
+  --font-sans: "Poppins", sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-white);
+    color: var(--color-brand-navy);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background-color: rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(255 255 255 / 0.2);
+  }
+  .gradient-text {
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, var(--color-brand-blue), var(--color-brand-purple));
+  }
+}
