@@ -6,7 +6,8 @@
   --color-brand-lightblue: #B9D6F2;
   --color-brand-verylightblue: #E4ECF1;
   --color-brand-purple: #AE69FD;
-  --font-sans: "Poppins", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-admin: "Plus Jakarta Sans", sans-serif;
 }
 
 @layer base {
@@ -29,4 +30,12 @@
     color: transparent;
     background-image: linear-gradient(to right, var(--color-brand-blue), var(--color-brand-purple));
   }
+  .animate-shrink-width {
+    animation: shrink-width linear forwards;
+  }
+}
+
+@keyframes shrink-width {
+  from { width: 100%; }
+  to { width: 0%; }
 }

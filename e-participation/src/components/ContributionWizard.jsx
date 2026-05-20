@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Check, UploadCloud, Shield, ArrowLeft, ArrowRight, User, Tag, MessageSquare, CheckCircle, FileText, X, Send, AlertCircle, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { sendContributionEmail } from '../lib/brevo';
 
 const steps = [
   { id: 1, title: 'Introduction' },
@@ -26,12 +27,13 @@ const ContributionWizard = () => {
   const [formData, setFormData] = useState({
     nom: profile?.last_name || '',
     prenom: profile?.first_name || '',
-    ville: 'Settat',
-    pays: 'Maroc',
-    age: '2',
-    email: user?.email || 'alaoui.yassine.emsi@gmail.com',
-    telephone: '+212616395207',
+    ville: '',
+    pays: '',
+    age: '',
+    email: user?.email || '',
+    telephone: '',
     nature: '',
+    service: '',
     projet: '',
     objet: '',
     message: '',
@@ -39,6 +41,17 @@ const ContributionWizard = () => {
     consentEmail: true,
     consentNewsletter: false
   });
+
+  useEffect(() => {
+    if (user || profile) {
+      setFormData(prev => ({
+        ...prev,
+        nom: prev.nom || profile?.last_name || '',
+        prenom: prev.prenom || profile?.first_name || '',
+        email: prev.email || user?.email || ''
+      }));
+    }
+  }, [user, profile]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -48,12 +61,69 @@ const ContributionWizard = () => {
     }));
   };
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 6));
+  const validateStep = () => {
+    setError(null);
+    if (currentStep === 2) {
+      if (!formData.nom.trim() || !formData.prenom.trim()) {
+        setError("Veuillez renseigner votre nom et prénom.");
+        return false;
+      }
+      if (!formData.email.trim()) {
+        setError("Veuillez renseigner votre adresse e-mail.");
+        return false;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        setError("Veuillez entrer une adresse e-mail valide.");
+        return false;
+      }
+      const ageVal = parseInt(formData.age, 10);
+      if (isNaN(ageVal) || ageVal < 18) {
+        setError("Vous devez avoir au moins 18 ans pour participer.");
+        return false;
+      }
+    }
+    if (currentStep === 3) {
+      if (!formData.nature) {
+        setError("Veuillez sélectionner la nature de votre participation.");
+        return false;
+      }
+      if (!formData.service) {
+        setError("Veuillez sélectionner le service concerné.");
+        return false;
+      }
+      if (!formData.objet.trim()) {
+        setError("Veuillez renseigner l'objet de votre participation.");
+        return false;
+      }
+    }
+    if (currentStep === 4) {
+      if (!formData.message.trim()) {
+        setError("Veuillez rédiger le contenu de votre message.");
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    if (validateStep()) {
+      setCurrentStep(prev => Math.min(prev + 1, 6));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const prevStep = () => {
+    setError(null);
     setCurrentStep(prev => Math.max(prev - 1, 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSubmit = async () => {
+    if (!formData.consentCndp) {
+      setError("Veuillez accepter la politique de protection des données (Loi 09-08).");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -61,29 +131,57 @@ const ContributionWizard = () => {
       if (selectedFile) {
         const fileExt = selectedFile.name.split('.').pop();
         const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${user.id}/${fileName}`;
+        const folder = user ? user.id : 'anonymous';
+        const filePath = `${folder}/${fileName}`;
         const { error: uploadError } = await supabase.storage.from('contributions').upload(filePath, selectedFile);
         if (uploadError) throw uploadError;
         const { data: { publicUrl } } = supabase.storage.from('contributions').getPublicUrl(filePath);
         fileUrl = publicUrl;
       }
       const ref = `ADD-${Math.floor(Math.random() * 9000000) + 1000000}`;
+      
+      // Mappage de la nature vers les types autorisés par la base de données ('Idée', 'Projet')
+      let dbType = 'Idée';
+      if (formData.nature === 'Projet') {
+        dbType = 'Projet';
+      }
+
       const { error } = await supabase.from('contributions').insert([{ 
-        user_id: user.id, 
-        type: formData.nature || 'Idée', 
+        user_id: user?.id || null, 
+        type: dbType, 
         title: formData.objet || 'Sans objet', 
         description: formData.message || 'Sans message',
         file_url: fileUrl,
         city: formData.ville,
         country: formData.pays,
-        age_at_submission: parseInt(formData.age, 10),
+        age_at_submission: parseInt(formData.age, 10) || null,
         email_contact: formData.email,
         phone_contact: formData.telephone,
         nature: formData.nature,
-        project: formData.projet,
+        project: formData.service || formData.projet || 'Autre',
         reference_number: ref
       }]);
       if (error) throw error;
+
+      // Envoi de l'e-mail de confirmation via Brevo
+      try {
+        await sendContributionEmail({
+          reference_number: ref,
+          nom: formData.nom,
+          prenom: formData.prenom,
+          email: formData.email,
+          telephone: formData.telephone,
+          city: formData.ville,
+          country: formData.pays,
+          nature: formData.nature,
+          service: formData.service || formData.projet || 'Autre',
+          title: formData.objet || 'Sans objet',
+          description: formData.message || 'Sans message'
+        });
+      } catch (mailErr) {
+        console.error("Erreur lors de l'envoi de l'e-mail de confirmation:", mailErr);
+      }
+
       setReference(ref);
       setCurrentStep(6);
     } catch (error) {
@@ -195,16 +293,11 @@ const ContributionWizard = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="block text-[14px] font-bold text-[#1F2937]">Ville <span className="text-[#E74C3C]">*</span></label>
-                    <select name="ville" value={formData.ville} onChange={handleChange} className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px] appearance-none cursor-pointer">
-                      <option value="Settat">Settat</option>
-                      <option value="Casablanca">Casablanca</option>
-                    </select>
+                    <input type="text" name="ville" value={formData.ville} onChange={handleChange} placeholder="Saisissez votre ville" className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px]" />
                   </div>
                   <div className="space-y-2">
                     <label className="block text-[14px] font-bold text-[#1F2937]">Pays <span className="text-[#E74C3C]">*</span></label>
-                    <select name="pays" value={formData.pays} onChange={handleChange} className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px] appearance-none cursor-pointer">
-                      <option value="Maroc">Maroc</option>
-                    </select>
+                    <input type="text" name="pays" value={formData.pays} onChange={handleChange} placeholder="Saisissez votre pays" className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px]" />
                   </div>
                   <div className="space-y-2 relative">
                     <label className="block text-[14px] font-bold text-[#1F2937]">Âge <span className="text-[#E74C3C]">*</span></label>
@@ -232,21 +325,44 @@ const ContributionWizard = () => {
                   <div className="w-[52px] h-[52px] rounded-2xl bg-purple-50 text-brand-purple flex items-center justify-center flex-shrink-0"><Tag className="w-6 h-6" /></div>
                   <div>
                     <h2 className="text-[28px] font-bold text-[#001D4A] leading-tight mb-2">Type de participation</h2>
-                    <p className="text-[#6B7280] text-[15px]">Précisez la nature de votre contribution et le projet concerné.</p>
+                    <p className="text-[#6B7280] text-[15px]">Précisez la nature de votre contribution, le service de l'ADD concerné et le projet.</p>
                   </div>
                 </div>
                 <div className="space-y-8">
-                  <div className="space-y-2">
-                    <label className="block text-[14px] font-bold text-[#1F2937]">Nature de la participation <span className="text-[#E74C3C]">*</span></label>
-                    <select name="nature" value={formData.nature} onChange={handleChange} className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px]">
-                      <option value="">Sélectionnez le type...</option>
-                      <option value="Idée">Idée</option>
-                      <option value="Consultation">Consultation</option>
-                    </select>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <label className="block text-[14px] font-bold text-[#1F2937]">Nature de la participation <span className="text-[#E74C3C]">*</span></label>
+                      <select name="nature" value={formData.nature} onChange={handleChange} className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px] cursor-pointer">
+                        <option value="">Sélectionnez le type...</option>
+                        <option value="Contribution">Contribution</option>
+                        <option value="Suggestion">Suggestion</option>
+                        <option value="Idée">Idée</option>
+                        <option value="Signalement">Signalement</option>
+                        <option value="Plainte">Plainte</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-[14px] font-bold text-[#1F2937]">Service de l'ADD concerné <span className="text-[#E74C3C]">*</span></label>
+                      <select name="service" value={formData.service} onChange={handleChange} className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px] cursor-pointer">
+                        <option value="">Sélectionnez le service...</option>
+                        <option value="Academia Raqmiya">Academia Raqmiya</option>
+                        <option value="E-Himaya">E-Himaya</option>
+                        <option value="Open Data">Open Data</option>
+                        <option value="Moutatawi3">Moutatawi3</option>
+                        <option value="Industrie 4.0">Industrie 4.0</option>
+                        <option value="Khawarazmi">Khawarazmi</option>
+                        <option value="Startup Hub">Startup Hub</option>
+                        <option value="Mokawala Raqmiya">Mokawala Raqmiya</option>
+                        <option value="Label Jeune Entreprise Innovante (JEI)">Label Jeune Entreprise Innovante (JEI)</option>
+                        <option value="Interopérabilité">Interopérabilité</option>
+                        <option value="Mobile Money">Mobile Money</option>
+                        <option value="Accessibilité Numérique">Accessibilité Numérique</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <label className="block text-[14px] font-bold text-[#1F2937]">Objet de la participation <span className="text-[#E74C3C]">*</span></label>
-                    <input type="text" name="objet" value={formData.objet} onChange={handleChange} placeholder="Ex: Amélioration du portail e-Gov" className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px]" />
+                    <input type="text" name="objet" value={formData.objet} onChange={handleChange} placeholder="Ex: Amélioration de l'accès aux cours sur Academia Raqmiya" className="w-full px-5 py-4 bg-[#F3F4F6] border-none rounded-2xl text-[#1F2937] focus:ring-2 focus:ring-[#0066A1] outline-none font-medium text-[15px]" />
                   </div>
                   <div className="bg-[#EBF5FB] border border-[#D6EAF8] rounded-2xl p-6 text-[15px] text-[#0066A1] flex gap-3">
                     <span className="font-bold">Conseil :</span>
@@ -336,9 +452,11 @@ const ContributionWizard = () => {
                    <p className="text-[#6EABC7] text-[12px] font-black uppercase tracking-[4px] mb-2">Référence de dossier</p>
                    <p className="text-white text-[32px] font-black tracking-widest">{reference}</p>
                 </div>
-                <button onClick={() => navigate('/')} className="bg-[#0066A1] text-white px-12 py-5 rounded-[20px] font-black text-[17px] shadow-xl shadow-[#0066A1]/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 mx-auto">
-                  <Home className="w-5 h-5" /> Retour à l'accueil
-                </button>
+                <div className="flex justify-center items-center max-w-xs mx-auto">
+                  <button onClick={() => navigate('/')} className="w-full bg-[#0066A1] text-white px-8 py-4 rounded-[20px] font-black text-[15px] shadow-xl shadow-[#0066A1]/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                    <Home className="w-4 h-4" /> Accueil
+                  </button>
+                </div>
               </div>
             )}
 

@@ -13,7 +13,7 @@ const ConsultationsPage = () => {
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [selectedContribution, setSelectedContribution] = useState(null);
 
-  const categories = ['Tous', 'Idée', 'Projet', 'Suggestion'];
+  const categories = ['Tous', 'Idée', 'Suggestion', 'Signalement', 'Plainte'];
 
   useEffect(() => {
     fetchContributions();
@@ -34,7 +34,7 @@ const ConsultationsPage = () => {
   const filtered = contributions.filter(c => {
     const matchesSearch = c.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          c.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = activeCategory === 'Tous' || c.type === activeCategory;
+    const matchesCategory = activeCategory === 'Tous' || (c.nature || c.type) === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -96,8 +96,8 @@ const ConsultationsPage = () => {
                 <div className="p-8 flex-grow">
                   <div className="flex justify-between items-start mb-6">
                     <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest
-                      ${c.type === 'Projet' ? 'bg-purple-50 text-brand-purple' : 'bg-blue-50 text-brand-blue'}`}>
-                      {c.type}
+                      ${(c.nature || c.type) === 'Projet' ? 'bg-purple-50 text-brand-purple' : 'bg-blue-50 text-brand-blue'}`}>
+                      {c.nature || c.type}
                     </span>
                     <span className="flex items-center gap-1.5 text-[10px] font-black text-green-600 uppercase tracking-widest bg-green-50 px-3 py-1 rounded-lg">
                       <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>

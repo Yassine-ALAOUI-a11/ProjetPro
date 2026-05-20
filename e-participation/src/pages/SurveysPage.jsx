@@ -105,42 +105,48 @@ const SurveysPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {[1, 2].map(i => <div key={i} className="h-[500px] bg-gray-100 animate-pulse rounded-[40px]"></div>)}
             </div>
+          ) : surveys.length === 0 ? (
+            <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm max-w-xl mx-auto">
+              <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-black text-brand-navy mb-2">Aucun sondage actif</h3>
+              <p className="text-gray-500 text-sm font-medium">Il n'y a aucun sondage citoyen actif pour le moment. Revenez plus tard pour participer !</p>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {surveys.map((s) => (
-                <div key={s.id} className="bg-white p-12 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
-                  <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center">
-                      <BarChart3 className="w-6 h-6" />
+                <div key={s.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all group">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center shrink-0">
+                      <BarChart3 className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-black text-brand-navy leading-tight break-words line-clamp-2">{s.question}</h3>
-                      <div className="flex items-center gap-4 mt-2 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                        <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" /> {s.total_votes.toLocaleString()} votes</span>
-                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Clôture : {new Date(s.closing_date).toLocaleDateString('fr-FR')}</span>
+                      <h3 className="text-base font-black text-brand-navy leading-tight break-words line-clamp-2">{s.question}</h3>
+                      <div className="flex items-center gap-3 mt-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                        <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {s.total_votes.toLocaleString()} votes</span>
+                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> Clôture : {new Date(s.closing_date).toLocaleDateString('fr-FR')}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {s.options.map((opt, idx) => {
                       const percentage = s.total_votes > 0 ? Math.round((opt.votes / s.total_votes) * 100) : 0;
                       const isSelected = selectedOptions[s.id] === idx;
                       return (
-                        <div key={idx} className="space-y-3">
+                        <div key={idx} className="space-y-2">
                           <button 
                             onClick={() => setSelectedOptions({...selectedOptions, [s.id]: idx})}
-                            className={`w-full flex items-center justify-between p-5 rounded-[24px] border-2 transition-all ${isSelected ? 'border-brand-blue bg-blue-50/50' : 'border-gray-50 bg-gray-50 hover:border-gray-200'}`}
+                            className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${isSelected ? 'border-brand-blue bg-blue-50/30' : 'border-gray-50 bg-gray-50 hover:border-gray-150'}`}
                           >
-                            <div className="flex items-center gap-4">
-                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-brand-blue bg-brand-blue' : 'border-gray-300'}`}>
-                                {isSelected && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
+                            <div className="flex items-center gap-3">
+                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-brand-blue bg-brand-blue' : 'border-gray-300 bg-white'}`}>
+                                {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
                               </div>
-                              <span className={`text-[15px] font-black ${isSelected ? 'text-brand-blue' : 'text-gray-700'}`}>{opt.text}</span>
+                              <span className={`text-xs font-semibold ${isSelected ? 'text-brand-blue' : 'text-gray-600'}`}>{opt.text}</span>
                             </div>
-                            <span className="text-[13px] font-black text-brand-navy">{percentage}%</span>
+                            <span className="text-[11px] font-black text-brand-navy">{percentage}%</span>
                           </button>
-                          <div className="w-full h-1.5 bg-gray-50 rounded-full overflow-hidden">
+                          <div className="w-full h-1 bg-gray-50 rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-brand-blue rounded-full transition-all duration-1000" 
                               style={{ width: `${percentage}%` }}
@@ -154,7 +160,7 @@ const SurveysPage = () => {
                   <button 
                     onClick={() => handleVote(s.id)}
                     disabled={votingId === s.id}
-                    className="w-full mt-10 py-5 bg-brand-blue text-white rounded-[24px] font-black text-[16px] hover:bg-blue-700 transition-all shadow-lg shadow-brand-blue/20 flex items-center justify-center gap-2"
+                    className="w-full mt-6 py-3 bg-brand-blue text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md flex items-center justify-center gap-2"
                   >
                     {votingId === s.id ? 'Enregistrement...' : 'Confirmer mon vote'}
                   </button>

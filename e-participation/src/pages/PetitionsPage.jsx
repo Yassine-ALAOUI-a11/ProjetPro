@@ -71,15 +71,15 @@ const PetitionsPage = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-16">
           <span className="px-4 py-1.5 bg-brand-purple/10 text-brand-purple rounded-full text-[11px] font-black uppercase tracking-widest mb-6 inline-block">
-            Pétitions ADD
+            e-Pétitions ADD
           </span>
-          <h1 className="text-5xl font-black text-brand-navy mb-4 tracking-tight">Pétitions populaires</h1>
+          <h1 className="text-5xl font-black text-brand-navy mb-4 tracking-tight">e-Pétitions populaires</h1>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <p className="text-gray-500 font-medium text-lg max-w-2xl leading-relaxed">
               Soutenez les initiatives citoyennes liées à la transformation digitale du Maroc.
             </p>
             <button className="text-brand-purple font-black text-sm flex items-center gap-2 hover:underline">
-              Voir toutes les pétitions <ChevronRight className="w-5 h-5" />
+              Voir toutes les e-Pétitions <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </div>

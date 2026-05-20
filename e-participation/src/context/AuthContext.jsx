@@ -59,11 +59,13 @@ export const AuthProvider = ({ children }) => {
     signUp: (data) => supabase.auth.signUp(data),
     signIn: (data) => supabase.auth.signInWithPassword(data),
     signOut: async () => {
+      const isAdmin = profile?.role === 'admin' || user?.email === 'hindpfe2002@gmail.com';
+      const redirectUrl = isAdmin ? '/administration-pfe-secure/login' : '/login';
       localStorage.clear();
       sessionStorage.clear();
       // Clear all cookies related to supabase if any
       const { error } = await supabase.auth.signOut();
-      window.location.href = '/'; // Force a full page reload to clear any remaining in-memory state
+      window.location.href = redirectUrl; // Force a full page reload to correct login route
       return { error };
     },
     refreshProfile: () => user && fetchProfile(user.id),

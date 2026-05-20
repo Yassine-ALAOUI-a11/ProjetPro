@@ -52,7 +52,7 @@ const ForgotPassword = () => {
               <span className="text-brand-navy ml-1">participation</span>
             </div>
           </Link>
-          <h2 className="text-3xl font-black text-[#001D4A] mb-4">Mot de passe oublié</h2>
+          <h2 className="text-3xl font-black text-brand-navy mb-4">Mot de passe oublié</h2>
           <p className="text-[#6B7280] font-medium">Entrez votre e-mail pour recevoir un lien de réinitialisation.</p>
         </div>
 
@@ -89,7 +89,7 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-5 bg-[#0066A1] text-white rounded-[24px] font-black text-[17px] shadow-xl shadow-[#0066A1]/30 hover:bg-[#005586] transition-all transform active:scale-95 disabled:opacity-50 mt-4 flex items-center justify-center gap-3"
+            className="w-full py-5 bg-brand-blue text-white rounded-[24px] font-black text-[17px] shadow-xl shadow-brand-blue/30 hover:bg-brand-blue/90 transition-all transform active:scale-95 disabled:opacity-50 mt-4 flex items-center justify-center gap-3"
           >
             {loading ? (
               <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

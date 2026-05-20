@@ -9,12 +9,12 @@ const resources = {
         "agency": "Agence de Développement du Digital",
         "participation": "Participation Citoyenne",
         "home": "Accueil",
-        "consultations": "Consultations",
-        "petitions": "Pétitions",
+        "consultations": "Contributions",
+        "petitions": "e-Pétitions",
         "surveys": "Sondages",
         "notifications": "Actualités & Notifications",
         "no_news": "Aucune nouvelle actualité.",
-        "login": "S'authentifier"
+        "login": "Contribuer"
       },
       "home": {
         "official_platform": "Plateforme officielle de l'ADD — Maroc",
@@ -48,7 +48,7 @@ const resources = {
         "status_done": "Traité"
       },
       "auth": {
-        "login_title": "S'authentifier",
+        "login_title": "Contribuer",
         "register_title": "Créer un compte",
         "email": "Adresse e-mail",
         "password": "Mot de passe",
@@ -63,8 +63,8 @@ const resources = {
         "description": "La plateforme citoyenne officielle de l'Agence de Développement du Digital du Maroc. Ensemble, façonnons l'administration digitale de demain.",
         "platform": "Plateforme",
         "home": "Accueil",
-        "consultations": "Consultations en cours",
-        "petitions": "Pétitions citoyennes",
+        "consultations": "Contributions",
+        "petitions": "e-Pétitions",
         "surveys": "Sondages",
         "participate": "Participer",
         "submit_idea": "Soumettre une idée",
@@ -84,12 +84,12 @@ const resources = {
         "agency": "Digital Development Agency",
         "participation": "Citizen Participation",
         "home": "Home",
-        "consultations": "Consultations",
-        "petitions": "Petitions",
+        "consultations": "Contributions",
+        "petitions": "e-Petitions",
         "surveys": "Surveys",
         "notifications": "News & Notifications",
         "no_news": "No recent news.",
-        "login": "Sign In"
+        "login": "Contribute"
       },
       "home": {
         "official_platform": "Official Platform of ADD — Morocco",
@@ -123,7 +123,7 @@ const resources = {
         "status_done": "Processed"
       },
       "auth": {
-        "login_title": "Sign In",
+        "login_title": "Contribute",
         "register_title": "Create Account",
         "email": "Email Address",
         "password": "Password",
@@ -138,8 +138,8 @@ const resources = {
         "description": "The official citizen platform of the Digital Development Agency of Morocco. Together, let's shape the digital administration of tomorrow.",
         "platform": "Platform",
         "home": "Home",
-        "consultations": "Ongoing Consultations",
-        "petitions": "Citizen Petitions",
+        "consultations": "Contributions",
+        "petitions": "e-Petitions",
         "surveys": "Surveys",
         "participate": "Participate",
         "submit_idea": "Submit an idea",
@@ -159,12 +159,12 @@ const resources = {
         "agency": "وكالة التنمية الرقمية",
         "participation": "المشاركة المواطنة",
         "home": "الرئيسية",
-        "consultations": "الاستشارات",
-        "petitions": "العرائض",
+        "consultations": "المساهمات",
+        "petitions": "العرائض الإلكترونية",
         "surveys": "الاستطلاعات",
         "notifications": "الأخبار والإشعارات",
         "no_news": "لا توجد أخبار حديثة.",
-        "login": "تسجيل الدخول"
+        "login": "مساهمة"
       },
       "home": {
         "official_platform": "المنصة الرسمية لوكالة التنمية الرقمية — المغرب",
@@ -198,7 +198,7 @@ const resources = {
         "status_done": "تمت المعالجة"
       },
       "auth": {
-        "login_title": "تسجيل الدخول",
+        "login_title": "مساهمة",
         "register_title": "إنشاء حساب",
         "email": "البريد الإلكتروني",
         "password": "كلمة المرور",
@@ -213,8 +213,8 @@ const resources = {
         "description": "المنصة الرسمية للمواطنين التابعة لوكالة التنمية الرقمية بالمغرب. معًا، لنشكل الإدارة الرقمية لغد أفضل.",
         "platform": "المنصة",
         "home": "الرئيسية",
-        "consultations": "الاستشارات الجارية",
-        "petitions": "عرائض المواطنين",
+        "consultations": "المساهمات",
+        "petitions": "العرائض الإلكترونية",
         "surveys": "الاستطلاعات",
         "participate": "شارك",
         "submit_idea": "تقديم فكرة",

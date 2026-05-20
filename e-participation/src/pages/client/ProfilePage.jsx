@@ -21,7 +21,7 @@ const ProfilePage = () => {
       const { data } = await supabase
         .from('contributions')
         .select('*')
-        .eq('user_id', user.id)
+        .or(`user_id.eq.${user.id},email_contact.eq.${user.email}`)
         .order('created_at', { ascending: false });
       setContributions(data || []);
     } catch (err) {
@@ -85,7 +85,7 @@ const ProfilePage = () => {
                         <FileText className="w-5 h-5 text-brand-blue" />
                       </div>
                       <div>
-                        <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest bg-brand-verylightblue px-2 py-0.5 rounded mb-1 inline-block">{c.type}</span>
+                        <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest bg-brand-verylightblue px-2 py-0.5 rounded mb-1 inline-block">{c.nature || c.type}</span>
                         <h4 className="font-bold text-brand-navy">{c.title}</h4>
                         <p className="text-[11px] text-gray-400 font-bold mt-1 uppercase">SOUUMIS LE {new Date(c.created_at).toLocaleDateString('fr-FR')}</p>
                       </div>
