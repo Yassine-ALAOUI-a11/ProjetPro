@@ -101,7 +101,10 @@ const AdminLogin = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[11px] font-black text-brand-navy uppercase tracking-widest ml-1">Mot de passe</label>
+            <div className="flex justify-between items-center px-1">
+              <label className="text-[11px] font-black text-brand-navy uppercase tracking-widest">Mot de passe</label>
+              <Link to="/forgot-password" size="sm" className="text-[10px] font-black text-brand-blue uppercase hover:underline">Oublié ?</Link>
+            </div>
             <div className="relative">
               <input
                 type="password"
