@@ -15,6 +15,8 @@ const Home = () => {
   const [stats, setStats] = useState({ total: 0, processed: 0, rate: 0, pending: 0 });
   const [citizensCount, setCitizensCount] = useState(0);
 
+
+  //test
   const [sondagesData, setSondagesData] = useState([]);
 
   const handleSelectOption = (surveyId, optionIndex) => {
@@ -106,18 +108,18 @@ const Home = () => {
 
   const displayConsultations = consultations && consultations.length > 0
     ? consultations.map((c) => ({
-        id: c.id,
-        category: c.nature || c.type || 'Suggestion',
-        categoryBg: (c.nature || c.type) === 'Projet' ? 'bg-purple-50 text-brand-purple' : (c.nature || c.type) === 'Signalement' ? 'bg-orange-50 text-orange-600' : (c.nature || c.type) === 'Plainte' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-brand-blue',
-        status: 'Validé',
-        statusBg: 'bg-green-50 text-green-600',
-        daysLeft: getDaysLeft(c.created_at),
-        title: c.title,
-        text: c.description || '',
-        authorName: c.profiles ? `${c.profiles.first_name || ''} ${c.profiles.last_name?.charAt(0) || ''}.` : 'Citoyen',
-        closingDate: new Date(c.created_at).toLocaleDateString('fr-FR'),
-        isReal: true
-      }))
+      id: c.id,
+      category: c.nature || c.type || 'Suggestion',
+      categoryBg: (c.nature || c.type) === 'Projet' ? 'bg-purple-50 text-brand-purple' : (c.nature || c.type) === 'Signalement' ? 'bg-orange-50 text-orange-600' : (c.nature || c.type) === 'Plainte' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-brand-blue',
+      status: 'Validé',
+      statusBg: 'bg-green-50 text-green-600',
+      daysLeft: getDaysLeft(c.created_at),
+      title: c.title,
+      text: c.description || '',
+      authorName: c.profiles ? `${c.profiles.first_name || ''} ${c.profiles.last_name?.charAt(0) || ''}.` : 'Citoyen',
+      closingDate: new Date(c.created_at).toLocaleDateString('fr-FR'),
+      isReal: true
+    }))
     : [];
 
 
@@ -152,7 +154,7 @@ const Home = () => {
         .select('*, profiles(first_name, last_name)')
         .eq('status', 'Traité')
         .order('updated_at', { ascending: false });
-      
+
       if (data) setNews(data);
     };
 
@@ -200,7 +202,7 @@ const Home = () => {
         .eq('status', 'Traité')
         .order('created_at', { ascending: false })
         .limit(4);
-      
+
       if (data) {
         setConsultations(data);
       }
@@ -212,12 +214,12 @@ const Home = () => {
         .select('*, survey_votes(*)')
         .order('created_at', { ascending: false })
         .limit(2);
-      
+
       if (data && data.length > 0) {
         const formattedData = data.map(s => {
           const votes = s.survey_votes || [];
           const total = votes.length;
-          
+
           const userVote = user ? votes.find(v => v.user_id === user.id) : null;
           const hasVoted = !!userVote;
           const userSelectedOption = userVote ? userVote.option_index : null;
@@ -278,7 +280,7 @@ const Home = () => {
   const sendChatMessage = (userMsg, botReply) => {
     setChatbotMessages(prev => [...prev, { text: userMsg, isBot: false }]);
     setIsBotTyping(true);
-    
+
     setTimeout(() => {
       setChatbotMessages(prev => [...prev, { text: botReply, isBot: true }]);
       setIsBotTyping(false);
@@ -289,9 +291,9 @@ const Home = () => {
     if (!chatInput.trim()) return;
     const msg = chatInput.trim();
     setChatInput("");
-    
+
     let botReply = "Je vous remercie pour votre message. Je suis en train d'apprendre et n'ai pas encore de réponse précise pour cela, mais vous pouvez soumettre une contribution officielle pour partager vos retours avec l'ADD.";
-    
+
     const lower = msg.toLowerCase();
     if (lower.includes("bonjour") || lower.includes("salut")) {
       botReply = "Bonjour ! Comment puis-je vous renseigner aujourd'hui sur la e-participation de l'ADD ?";
@@ -313,12 +315,12 @@ const Home = () => {
     if (serviceFilter !== 'all' && item.project !== serviceFilter) {
       return false;
     }
-    
+
     if (dateFilter !== 'all') {
       const itemDate = new Date(item.updated_at);
       const diffTime = Math.abs(new Date() - itemDate);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       if (dateFilter === 'week' && diffDays > 7) {
         return false;
       }
@@ -326,7 +328,7 @@ const Home = () => {
         return false;
       }
     }
-    
+
     return true;
   });
 
@@ -341,18 +343,18 @@ const Home = () => {
               <span className="text-brand-purple text-lg leading-none">✦</span>
               <span>{t('home.official_platform')}</span>
             </div>
-            
+
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
               {t('home.hero_title')} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-lightblue to-brand-purple">
                 {t('home.hero_highlight')}
               </span>
             </h1>
-            
+
             <p className="text-lg text-gray-300 mb-10 max-w-2xl leading-relaxed font-medium">
               Une plateforme sécurisée pour exprimer vos idées afin de contribuer au développement des services de l’ADD
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/client/soumettre" className="bg-brand-blue hover:bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all shadow-lg shadow-brand-blue/30">
                 <Send className={`w-5 h-5 ${isRtl ? 'rotate-180' : ''}`} />
@@ -363,7 +365,7 @@ const Home = () => {
                 <ChevronRight className={`w-5 h-5 ${isRtl ? 'rotate-180' : ''}`} />
               </Link>
             </div>
-            
+
             <div className="mt-12 flex items-center gap-4">
               <div className={`flex ${isRtl ? 'space-x-reverse -space-x-3' : '-space-x-3'}`}>
                 <div className="w-10 h-10 rounded-full border-2 border-brand-navy bg-brand-blue flex items-center justify-center"><Users className="w-5 h-5 text-white" /></div>
@@ -383,7 +385,7 @@ const Home = () => {
       {/* Stats Section */}
       <section className="py-20 bg-white border-b border-gray-100 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           {/* Header Block */}
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="px-4 py-1.5 bg-brand-verylightblue/60 text-brand-blue rounded-full text-[11px] font-black uppercase tracking-widest mb-4 inline-block">
@@ -399,7 +401,7 @@ const Home = () => {
 
           {/* Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            
+
             {/* Card 1: Contributions reçues */}
             <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm relative overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow min-h-[220px]">
               <div className="absolute top-0 left-8 w-12 h-1 bg-brand-blue rounded-b-lg"></div>
@@ -493,7 +495,7 @@ const Home = () => {
       {/* What is e-participation Section */}
       <section className="py-24 bg-[#F8FAFC] border-b border-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           {/* Header Block */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
             <div className="max-w-2xl">
@@ -508,18 +510,18 @@ const Home = () => {
               </p>
             </div>
             <div className="flex-shrink-0">
-              <Link 
-                to="/client/soumettre" 
+              <Link
+                to="/client/soumettre"
                 className="px-6 py-4 bg-brand-blue hover:bg-blue-700 text-white rounded-2xl font-black text-sm flex items-center gap-2 transition-all shadow-lg shadow-brand-blue/20"
               >
                 Commencer ma contribution <span className="text-lg leading-none">→</span>
               </Link>
             </div>
           </div>
-          
+
           {/* Grid of 4 Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
+
             {/* Card 1: Vos idées comptent */}
             <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
               <div className="w-12 h-12 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-6">
@@ -530,7 +532,7 @@ const Home = () => {
                 Soumettez vos suggestions, idées et signalements pour améliorer les services numériques de l'administration marocaine.
               </p>
             </div>
-            
+
             {/* Card 2: Participation active */}
             <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
               <div className="w-12 h-12 bg-purple-50 text-brand-purple rounded-2xl flex items-center justify-center mb-6">
@@ -541,7 +543,7 @@ const Home = () => {
                 Contribuez directement à la transformation digitale du Maroc en rejoignant des milliers de citoyens engagés.
               </p>
             </div>
-            
+
             {/* Card 3: Impact réel */}
             <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
               <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
@@ -552,7 +554,7 @@ const Home = () => {
                 Vos contributions sont analysées par les équipes de l'ADD et peuvent influencer directement les projets numériques nationaux.
               </p>
             </div>
-            
+
             {/* Card 4: Données protégées */}
             <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full">
               <div className="w-12 h-12 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center mb-6">
@@ -563,7 +565,7 @@ const Home = () => {
                 Vos données personnelles sont traitées conformément à la loi 09-08 et déclarées auprès de la CNDP.
               </p>
             </div>
-            
+
           </div>
 
           {/* Warning Banner / Périmètre */}
@@ -583,7 +585,7 @@ const Home = () => {
       {/* Public Consultations Section */}
       <section className="py-24 bg-white overflow-hidden border-t border-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           {/* Header Block */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
             <div className="max-w-2xl">
@@ -598,8 +600,8 @@ const Home = () => {
               </p>
             </div>
             <div className="flex-shrink-0">
-              <Link 
-                to="/client/soumettre" 
+              <Link
+                to="/client/soumettre"
                 className="text-brand-blue hover:text-blue-700 font-black text-sm flex items-center gap-1 transition-all"
               >
                 Soumettre ma contribution <span className="text-lg leading-none">→</span>
@@ -615,8 +617,8 @@ const Home = () => {
               </div>
               <h3 className="text-xl font-black text-brand-navy mb-2">Aucune consultation validée</h3>
               <p className="text-gray-400 font-medium max-w-md mx-auto">Les contributions validées par l'administration apparaîtront ici. Soyez le premier à soumettre une idée !</p>
-              <Link 
-                to="/client/soumettre" 
+              <Link
+                to="/client/soumettre"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-brand-blue hover:bg-blue-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-brand-blue/20 mt-8"
               >
                 Soumettre ma contribution <span className="text-lg leading-none">→</span>
@@ -626,8 +628,8 @@ const Home = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {displayConsultations.map((c) => (
-                  <div 
-                    key={c.id} 
+                  <div
+                    key={c.id}
                     className="p-8 bg-white rounded-[32px] border border-gray-150 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
                   >
                     <div>
@@ -673,8 +675,8 @@ const Home = () => {
 
               {/* Center Button */}
               <div className="text-center mt-12">
-                <Link 
-                  to="/consultations" 
+                <Link
+                  to="/consultations"
                   className="inline-flex items-center gap-2 px-8 py-4 bg-brand-blue hover:bg-blue-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-brand-blue/20"
                 >
                   Voir toutes les consultations <span className="text-lg leading-none">→</span>
@@ -689,7 +691,7 @@ const Home = () => {
       {/* Sondages Citoyens Section */}
       <section className="py-24 bg-[#F8FAFC] overflow-hidden border-t border-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           {/* Header Block */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
             <div className="max-w-2xl">
@@ -704,8 +706,8 @@ const Home = () => {
               </p>
             </div>
             <div className="flex-shrink-0">
-              <Link 
-                to="/sondages" 
+              <Link
+                to="/sondages"
                 className="text-green-600 hover:text-green-700 font-black text-sm flex items-center gap-1 transition-all"
               >
                 Voir tous les sondages <span className="text-lg leading-none">→</span>
@@ -722,12 +724,12 @@ const Home = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {sondagesData.map((s) => (
-                <div 
-                  key={s.id} 
+                <div
+                  key={s.id}
                   className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
-                    
+
                     {/* Top Bar Chart Icon */}
                     <div className="w-8 h-8 bg-green-50 text-green-600 rounded-lg flex items-center justify-center mb-4">
                       <BarChart3 className="w-4 h-4" />
@@ -753,18 +755,17 @@ const Home = () => {
                       {s.options.map((opt, idx) => {
                         const isSelected = s.selectedOption === idx;
                         return (
-                          <div 
-                            key={idx} 
+                          <div
+                            key={idx}
                             onClick={() => !s.voted && handleSelectOption(s.id, idx)}
-                            className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
-                              s.voted 
-                                ? isSelected 
-                                  ? 'bg-brand-verylightblue/30 border-brand-blue/30' 
+                            className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer ${s.voted
+                                ? isSelected
+                                  ? 'bg-brand-verylightblue/30 border-brand-blue/30'
                                   : 'bg-gray-50/50 border-gray-50'
                                 : isSelected
                                   ? 'bg-brand-verylightblue/20 border-brand-blue/50 shadow-sm'
                                   : 'bg-white border-gray-100 hover:border-brand-blue/55'
-                            }`}
+                              }`}
                           >
                             <div className="flex justify-between items-center mb-1.5">
                               <div className="flex items-center gap-2">
@@ -789,11 +790,11 @@ const Home = () => {
                                 {opt.percentage}%
                               </span>
                             </div>
-                            
+
                             {/* Animated Progress Bar */}
                             <div className="h-1 w-full bg-gray-50 rounded-full overflow-hidden">
-                              <div 
-                                className={`h-full rounded-full transition-all duration-1000 ${opt.colorClass}`} 
+                              <div
+                                className={`h-full rounded-full transition-all duration-1000 ${opt.colorClass}`}
                                 style={{ width: `${s.voted ? opt.percentage : 0}%` }}
                               ></div>
                             </div>
@@ -812,14 +813,13 @@ const Home = () => {
                         <span className="text-xs font-bold text-green-700">✓ Merci pour votre participation ! Votre vote a été enregistré.</span>
                       </div>
                     ) : (
-                      <button 
+                      <button
                         disabled={s.selectedOption === null}
                         onClick={() => s.selectedOption !== null && handleVoteSubmit(s.id)}
-                        className={`w-full py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all text-center block ${
-                          s.selectedOption === null 
+                        className={`w-full py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all text-center block ${s.selectedOption === null
                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                             : 'bg-brand-verylightblue text-brand-blue hover:bg-brand-blue hover:text-white shadow-sm cursor-pointer'
-                        }`}
+                          }`}
                       >
                         Voter maintenant
                       </button>
@@ -835,11 +835,11 @@ const Home = () => {
       </section>
 
 
-      
+
       {/* Floating Chatbot */}
       <div className={`fixed bottom-6 ${isRtl ? 'left-6' : 'right-6'} z-50`}>
         {/* Toggle Button */}
-        <button 
+        <button
           onClick={() => setIsChatbotOpen(!isChatbotOpen)}
           className="w-14 h-14 bg-gradient-to-tr from-brand-blue to-brand-purple rounded-full shadow-xl flex items-center justify-center cursor-pointer hover:scale-105 transition-all text-white relative focus:outline-none"
         >
@@ -869,11 +869,10 @@ const Home = () => {
             <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-gray-50/50">
               {chatbotMessages.map((msg, index) => (
                 <div key={index} className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}>
-                  <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${
-                    msg.isBot 
-                      ? 'bg-white text-gray-700 rounded-tl-none border border-gray-100 shadow-sm' 
+                  <div className={`max-w-[80%] p-4 rounded-2xl text-sm leading-relaxed ${msg.isBot
+                      ? 'bg-white text-gray-700 rounded-tl-none border border-gray-100 shadow-sm'
                       : 'bg-brand-blue text-white rounded-tr-none'
-                  }`}>
+                    }`}>
                     {msg.text}
                   </div>
                 </div>
@@ -918,7 +917,7 @@ const Home = () => {
                 onKeyDown={(e) => e.key === 'Enter' && handleSendCustomMessage()}
                 className="flex-1 bg-gray-50 border border-gray-100 text-sm rounded-xl px-4 py-2.5 outline-none focus:border-brand-blue/30 font-medium"
               />
-              <button 
+              <button
                 onClick={handleSendCustomMessage}
                 className="w-10 h-10 bg-brand-blue hover:bg-blue-600 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md shadow-brand-blue/15 transition-all"
               >
